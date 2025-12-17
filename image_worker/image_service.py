@@ -1,0 +1,87 @@
+import base64
+import io
+import time
+from typing import Optional, Tuple
+
+import torch
+from diffusers import AutoPipelineForText2Image
+from PIL import Image
+
+
+class ImageGenService:
+    """Minimal Diffusers text-to-image service meant for Runpod Serverless.
+
+    - Loads the pipeline once per warm worker (kept in a module-level singleton in handler.py)
+    - Generates a PIL.Image and can return it as base64 PNG
+    """
+
+    def __init__(
+        self,
+        model_id: str,
+        device: str = "cuda",
+        dtype: Optional[torch.dtype] = None,
+        disable_progress: bool = True,
+    ):
+        t0 = time.perf_counter()
+
+        if device != "cuda" or not torch.cuda.is_available():
+            raise RuntimeError("CUDA (GPU) is required. Make sure PyTorch sees your GPU.")
+
+        if dtype is None:
+            # Sensible default on GPU
+            dtype = torch.float16
+
+        self.model_id = model_id
+        self.device = device
+        self.dtype = dtype
+
+        # Diffusers pipeline
+        pipe = AutoPipelineForText2Image.from_pretrained(
+            model_id,
+            torch_dtype=dtype,
+            safety_checker=None,
+            requires_safety_checker=False,
+        )
+        pipe = pipe.to(device)
+
+        if disable_progress:
+            try:
+                pipe.set_progress_bar_config(disable=True)
+            except Exception:
+                pass
+
+        self.pipe = pipe
+        self.init_time_s = time.perf_counter() - t0
+
+    @staticmethod
+    def encode_base64_png(img: Image.Image) -> str:
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode("utf-8")
+
+    def generate(
+        self,
+        prompt: str,
+        size: int = 512,
+        steps: int = 10,
+        seed: int = 42,
+        guidance_scale: float = 0.0,
+    ) -> Tuple[Image.Image, float]:
+        """Generate an image and return (PIL.Image, generation_time_seconds)."""
+        t0 = time.perf_counter()
+
+        # Deterministic-ish
+        generator = torch.Generator(device=self.device).manual_seed(int(seed))
+
+        # Many turbo-ish models prefer guidance_scale=0, but keep configurable.
+        out = self.pipe(
+            prompt=prompt,
+            num_inference_steps=int(steps),
+            guidance_scale=float(guidance_scale),
+            width=int(size),
+            height=int(size),
+            generator=generator,
+        )
+
+        img = out.images[0]
+        return img, (time.perf_counter() - t0)
