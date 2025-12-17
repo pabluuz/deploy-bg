@@ -1,7 +1,7 @@
 import os
 import runpod
 
-from image_worker.llm_service import LLMService
+from .llm_service import LLMService
 
 _SERVICE = None
 
