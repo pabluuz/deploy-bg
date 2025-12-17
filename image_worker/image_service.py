@@ -36,13 +36,17 @@ class ImageGenService:
         self.dtype = dtype
 
         # Diffusers pipeline
+        print("INIT: start", flush=True)
         pipe = AutoPipelineForText2Image.from_pretrained(
             model_id,
             torch_dtype=dtype,
             safety_checker=None,
             requires_safety_checker=False,
         )
+        print("INIT: from_pretrained done", flush=True)
         pipe = pipe.to(device)
+        
+        print("INIT: to(cuda) done", flush=True)
 
         if disable_progress:
             try:
