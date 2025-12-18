@@ -3,6 +3,9 @@ set -euo pipefail
 
 cd /app
 
+echo "[BOOT] WORKER='${WORKER-}'" >&2
+env | grep -E '^WORKER=' >&2 || true
+
 case "${WORKER:-image}" in
   image)
     exec python3 -u /app/image_worker/handler.py
