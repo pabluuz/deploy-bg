@@ -9,7 +9,7 @@ _SERVICE = None
 def _get_service() -> ImageGenService:
     global _SERVICE
     if _SERVICE is None:
-        model_id = os.getenv("IMG_MODEL_ID", "madebyollin/tinysd-1-1b")
+        model_id = os.getenv("IMG_MODEL_ID", "stabilityai/sdxl-turbo")
         steps_default = int(os.getenv("IMG_STEPS_DEFAULT", "10"))
         size_default = int(os.getenv("IMG_SIZE_DEFAULT", "512"))
         # store defaults on service object for convenience
