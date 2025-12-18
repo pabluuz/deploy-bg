@@ -34,9 +34,11 @@ def handler(job):
     size = int(inp.get("size", getattr(svc, "size_default", 512)))
     seed = int(inp.get("seed", 42))
     guidance_scale = float(inp.get("guidance_scale", getattr(svc, "guidance_scale_default", 6.5)))
+    negative_prompt = inp.get("negative_prompt", None)
 
     img, gen_time = svc.generate(
         prompt=prompt,
+        negative_prompt=negative_prompt,
         steps=steps,
         size=size,
         seed=seed,

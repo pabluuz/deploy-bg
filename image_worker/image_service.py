@@ -7,6 +7,13 @@ import torch
 from diffusers import AutoPipelineForText2Image
 from PIL import Image
 
+DEFAULT_NEGATIVE_PROMPT = (
+    "worst quality, low quality, lowres, blurry, jpeg artifacts, noise, "
+    "watermark, signature, logo, text, caption, "
+    "deformed, disfigured, bad anatomy, malformed, extra limbs, "
+    "duplicate, cropped, out of frame, "
+    "glitch, tiling, poorly drawn"
+)
 
 class ImageGenService:
     """Minimal Diffusers text-to-image service meant for Runpod Serverless.
@@ -70,6 +77,7 @@ class ImageGenService:
         steps: int = 10,
         seed: int = 42,
         guidance_scale: float = 0.0,
+        negative_prompt: Optional[str] = None,
     ) -> Tuple[Image.Image, float]:
         """Generate an image and return (PIL.Image, generation_time_seconds)."""
         t0 = time.perf_counter()
@@ -77,9 +85,14 @@ class ImageGenService:
         # Deterministic-ish
         generator = torch.Generator(device=self.device).manual_seed(int(seed))
 
-        # Many turbo-ish models prefer guidance_scale=0, but keep configurable.
+        if negative_prompt is None:
+            neg = DEFAULT_NEGATIVE_PROMPT
+        else:
+            neg = negative_prompt
+
         out = self.pipe(
             prompt=prompt,
+            negative_prompt=neg,
             num_inference_steps=int(steps),
             guidance_scale=float(guidance_scale),
             width=int(size),
