@@ -6,6 +6,5 @@ COPY . .
 RUN pip install --no-cache-dir -r image_worker/requirements.txt \
  && pip install --no-cache-dir -r llm_worker/requirements.txt
 
-ENV WORKER=image
 RUN chmod +x /app/start.sh
 CMD ["/app/start.sh"]
