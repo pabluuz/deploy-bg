@@ -12,7 +12,7 @@ def _get_service() -> ImageGenService:
         model_id = os.getenv("IMG_MODEL_ID", "stabilityai/sdxl-turbo")
         steps_default = int(os.getenv("IMG_STEPS_DEFAULT", "10"))
         size_default = int(os.getenv("IMG_SIZE_DEFAULT", "512"))
-        guidance_scale_default = int(os.getenv("GUIDANCE_SCALE_DEFAULT", "6.5"))
+        guidance_scale_default = float(os.getenv("GUIDANCE_SCALE_DEFAULT", "6.5"))
         # store defaults on service object for convenience
         svc = ImageGenService(model_id=model_id)
         svc.steps_default = steps_default
