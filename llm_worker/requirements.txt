@@ -1,5 +1,0 @@
-runpod>=1.7.0
-torch
-transformers
-accelerate
-safetensors
