@@ -33,6 +33,3 @@ def handler(job):
         top_p=top_p,
     )
     return {"text": text, "model_id": svc.model_id}
-
-
-runpod.serverless.start({"handler": handler})

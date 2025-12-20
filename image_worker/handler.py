@@ -56,6 +56,3 @@ def handler(job):
         "seed": seed,
         "guidance_scale": guidance_scale,
     }
-
-
-runpod.serverless.start({"handler": handler})
