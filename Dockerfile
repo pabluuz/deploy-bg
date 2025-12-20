@@ -6,5 +6,4 @@ COPY . .
 RUN pip install --no-cache-dir -r image_worker/requirements.txt \
  && pip install --no-cache-dir -r llm_worker/requirements.txt
 
-RUN chmod +x /app/start.sh
-CMD ["/app/start.sh"]
+CMD ["python3", "-u", "custom_handler.py"]
