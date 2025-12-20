@@ -5,9 +5,9 @@ import runpod
 WORKER = os.getenv("WORKER", "").lower()
 
 if WORKER == "image":
-    from image_worker.handler import handler
+    from image_worker.image_handler import handler
 elif WORKER == "llm":
-    from llm_worker.handler import handler
+    from llm_worker.llm_handler import handler
 else:
     raise RuntimeError(
         "Invalid WORKER env. Expected WORKER=image or WORKER=llm"
