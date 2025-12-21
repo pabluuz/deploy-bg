@@ -5,4 +5,4 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "-u", "custom_handler.py"]
+CMD ["python3", "-u", "handler.py"]
