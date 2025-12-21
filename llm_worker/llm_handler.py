@@ -1,7 +1,7 @@
 import os
 import runpod
 
-from llm_service import LLMService
+from llm_worker.llm_service import LLMService
 
 _SERVICE = None
 

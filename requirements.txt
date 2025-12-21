@@ -1,4 +1,4 @@
-runpod>=1.7.0
+runpod
 torch
 diffusers
 transformers

@@ -1,7 +1,7 @@
 import os
 import runpod
 
-from image_service import ImageGenService
+from image_worker.image_service import ImageGenService
 
 _SERVICE = None
 
