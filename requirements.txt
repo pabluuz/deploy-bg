@@ -4,6 +4,6 @@ transformers
 accelerate
 safetensors
 Pillow
-TTS
+coqui-tts
 soundfile
 numpy
