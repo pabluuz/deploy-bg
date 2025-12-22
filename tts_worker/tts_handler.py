@@ -29,20 +29,10 @@ def handler(job):
     # Polish default
     language = inp.get("language", os.getenv("TTS_LANGUAGE_DEFAULT", "pl"))
 
-    # Voice reference: preferred base64 wav
-    speaker_wav_b64 = inp.get("speaker_wav_b64")
-    # Optional: allow a path (useful when testing on a Pod)
-    speaker_wav_path = inp.get("speaker_wav_path")
-
-    if not speaker_wav_b64 and not speaker_wav_path:
-        return {"error": "Missing required field: input.speaker_wav_b64 (WAV base64) or input.speaker_wav_path"}
-
     try:
         wav_bytes, sr = svc.synthesize_wav_bytes(
             text=text,
-            language=language,
-            speaker_wav_b64=speaker_wav_b64,
-            speaker_wav_path=speaker_wav_path,
+            language=language
         )
     except Exception as e:
         return {"error": f"TTS synthesis failed: {type(e).__name__}: {e}"}
