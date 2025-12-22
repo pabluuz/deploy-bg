@@ -8,4 +8,4 @@ RUN python -m pip install --no-cache-dir -r requirements.txt
 
 RUN python -c "import runpod; print('runpod import OK')"
 
-CMD ["python", "-u", "app/handler.py"]
+CMD ["python", "-u", "handler.py"]
