@@ -1,34 +1,57 @@
-# Runpod Serverless: Two Endpoints (Image + LLM)
 
-This repo is meant to be deployed on **Runpod Serverless** as **two separate endpoints** from the same GitHub repository:
+# Runpod Serverless: Image & LLM API (One Repo)
 
-- **Image endpoint** (`image_worker/handler.py`): Stable Diffusion via Diffusers (default: `madebyollin/tinysd-1-1b`)
-- **LLM endpoint** (`llm_worker/handler.py`): Transformers text generation (default: `qwen/qwen3-8b`)
+This repository provides two endpoints for Runpod Serverless, both deployable from a single GitHub repo:
 
-## 1) Deploy on Runpod (two endpoints, one repo)
+- **Image Generation** (Stable Diffusion via Diffusers)
+- **Text Generation** (Transformers LLM)
 
-Create two Serverless Endpoints pointing to this repo:
+## Deployment
 
-### Endpoint A — Image
-- **Start Command**: `python -u image_worker/handler.py`
-- **Env** (recommended):
+Deploy using the default `handler.py` entrypoint. Select the endpoint type via the `WORKER` environment variable:
+
+- `WORKER=image` — image generation
+- `WORKER=llm` — text generation
+
+**Dockerfile** and `handler.py` are preconfigured for Runpod. Set model IDs and other options via environment variables as needed.
+
+### Example Environment Variables
+
+- For image:
   - `IMG_MODEL_ID=madebyollin/tinysd-1-1b`
   - `IMG_STEPS_DEFAULT=10`
   - `IMG_SIZE_DEFAULT=512`
-  - `HF_HOME=/runpod-volume/hf` (optional, improves caching if you mount a volume)
-
-### Endpoint B — LLM
-- **Start Command**: `python -u llm_worker/handler.py`
-- **Env** (recommended):
+- For LLM:
   - `LLM_MODEL_ID=qwen/qwen3-8b`
   - `LLM_MAX_NEW_TOKENS_DEFAULT=256`
-  - `HF_HOME=/runpod-volume/hf` (optional)
+- (Optional) `HF_HOME=/runpod-volume/hf` for model cache
 
-> Tip: If you mount a Runpod Volume and set `HF_HOME`, model downloads are cached across restarts and cold starts are much less painful.
 
-## 2) Request format
 
-### Image endpoint input
+## API Input/Output
+
+### Autoryzacja
+
+Do każdego żądania należy dodać nagłówek:
+
+    Authorization: Bearer <api_key_here>
+
+### Asynchroniczny workflow (zalecany na Runpod)
+
+1. **Wyślij żądanie POST do endpointa /run:**
+
+       https://api.runpod.ai/v2/<endpoint_id>/run
+
+   W odpowiedzi otrzymasz job ID i status (np. IN_QUEUE).
+
+2. **Sprawdzaj status i odbierz wynik:**
+
+       https://api.runpod.ai/v2/<endpoint_id>/status/<job_id>
+
+   Gdy status będzie COMPLETED, pole `output` zawiera wynik.
+
+### Image Generation
+**Input:**
 ```json
 {
   "input": {
@@ -40,17 +63,36 @@ Create two Serverless Endpoints pointing to this repo:
   }
 }
 ```
-
-Returns:
+**Odpowiedź z /run:**
 ```json
 {
-  "image_base64": "<base64 PNG>",
-  "gen_time_s": 1.23,
-  "model_init_time_s": 2.34
+  "id": "0bb734ce-cd27-471a-801d-55aa4f326241-e2",
+  "status": "IN_QUEUE"
+}
+```
+**Odpowiedź z /status/<job_id> (po zakończeniu):**
+```json
+{
+  "delayTime": 11515,
+  "executionTime": 47678,
+  "id": "0bb734ce-cd27-471a-801d-55aa4f326241-e2",
+  "output": {
+    "gen_time_s": 4.83,
+    "guidance_scale": 7,
+    "image_base64": "<base64 PNG>",
+    "model_id": "stabilityai/stable-diffusion-xl-base-1.0",
+    "model_init_time_s": 42.48,
+    "seed": 42,
+    "size": 512,
+    "steps": 30
+  },
+  "status": "COMPLETED",
+  "workerId": "ilxf2mf5eo0z0k"
 }
 ```
 
-### LLM endpoint input
+### Text Generation
+**Input:**
 ```json
 {
   "input": {
@@ -61,18 +103,23 @@ Returns:
   }
 }
 ```
-
-Returns:
+**Odpowiedź z /run:**
 ```json
 {
-  "text": "..."
+  "id": "...",
+  "status": "IN_QUEUE"
+}
+```
+**Odpowiedź z /status/<job_id> (po zakończeniu):**
+```json
+{
+  "output": {
+    "text": "..."
+  },
+  "status": "COMPLETED"
 }
 ```
 
-## 3) Notes
+## Notes
 
-- This repo is a **starting point**. For production you probably want:
-  - streaming for LLM,
-  - concurrency limits,
-  - timeouts + retry logic on the caller side,
-  - quantization (4-bit) to reduce VRAM.
+- For production, consider: streaming for LLM, concurrency limits, timeouts, retry logic, and quantization for lower VRAM use.
