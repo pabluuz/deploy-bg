@@ -1,6 +1,8 @@
 # tts_worker/tts_service.py
-import io
+
 import os
+os.environ["XDG_CACHE_HOME"] = "/app/tts_cache"
+import io
 from typing import Optional, Tuple
 
 import numpy as np

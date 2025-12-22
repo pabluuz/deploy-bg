@@ -7,3 +7,4 @@ Pillow
 coqui-tts
 soundfile
 numpy
+torchcodec
