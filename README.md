@@ -120,6 +120,41 @@ Do każdego żądania należy dodać nagłówek:
 }
 ```
 
+### Text-to-Speech (TTS)
+
+**Input:**
+```json
+{
+  "input": {
+    "text": "Witaj świecie w tym pięknym dniu"
+  }
+}
+```
+**Odpowiedź z /run:**
+```json
+{
+  "id": "...",
+  "status": "IN_QUEUE"
+}
+```
+**Odpowiedź z /status/<job_id> (po zakończeniu):**
+```json
+{
+  "output": {
+    "audio_wav_b64": "<base64 WAV>",
+    "sample_rate": 24000
+  },
+  "status": "COMPLETED"
+}
+```
+Plik audio zwracany jest jako base64 zakodowany WAV. Aby odsłuchać, zapisz go do pliku audio.wav:
+```python
+import base64
+b64 = "<base64 WAV>"
+with open("audio.wav", "wb") as f:
+    f.write(base64.b64decode(b64))
+```
+
 ## Notes
 
 - For production, consider: streaming for LLM, concurrency limits, timeouts, retry logic, and quantization for lower VRAM use.
