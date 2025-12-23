@@ -7,7 +7,6 @@ COPY . .
 ENV XDG_CACHE_HOME=/app/tts_cache
 ENV COQUI_TOS_AGREED=1
 RUN python -m pip install --upgrade pip
-RUN python -m pip install torch
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
 RUN python -c "import runpod; print('runpod import OK')"
