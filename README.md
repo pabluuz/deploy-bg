@@ -92,12 +92,23 @@ Do każdego żądania należy dodać nagłówek:
 ```
 
 ### Text Generation
-**Input:**
+**Input (z obsługą historii i system_message):**
 ```json
 {
   "input": {
-    "prompt": "Write a short poem about rain.",
-    "max_new_tokens": 200,
+    "system_message": "Jesteś zwięzłym Mistrzem Gry w tekstowej grze fabularnej fantasy. Zachowuj ścisłą ciągłość narracji. W każdej turze zwróć TYLKO jeden zwięzły obiekt JSON (bez markdown, bez dodatkowych znaków), z kluczami: { 'narration': string (6–10 krótkich zdań, maks ~220 słów, 2. osoba, PO POLSKU), 'image_prompt': string (opis jednej sceny do generatora obrazów, po angielsku, max 30 słów; bez tekstu/wodnych znaków) } Bez dodatkowych kluczy. Bez wyjaśnień. Ton: przygodowy, skupiony. Cała gra toczy się w świecie fantasy. Każda narracja musi kończyć się jasną sytuacją, pytaniem lub wyzwaniem dla gracza, zachęcając go do działania lub podjęcia decyzji. Używaj wyłącznie pojedynczych cudzysłowów (') dla wszystkich wartości JSON, nigdy podwójnych (\").",
+    "history": [
+      {
+        "user": "Rozpocznij grę. Chcę wejść do mrocznego lasu.",
+        "assistant": "{ 'narration': 'Wchodzisz do mrocznego lasu, gdzie mgła spowija drzewa, a cisza jest niepokojąca. Słyszysz szelest liści pod stopami. Przed tobą ścieżka rozdziela się na dwie odnogi.', 'image_prompt': 'A misty, dark fantasy forest with two diverging paths' }"
+      },
+      {
+        "user": "Idę w lewo i rozglądam się za śladami.",
+        "assistant": "{ 'narration': 'Idziesz w lewo, ostrożnie rozglądając się po ściółce. Widzisz świeże ślady butów oraz kilka połamanych gałązek. W oddali słychać cichy szmer wody.', 'image_prompt': 'A fantasy forest path with footprints and broken branches' }"
+      }
+    ],
+    "prompt": "Co widzę na ścieżce? Czy są jakieś ślady lub pułapki?",
+    "max_new_tokens": 220,
     "temperature": 0.7,
     "top_p": 0.9
   }
