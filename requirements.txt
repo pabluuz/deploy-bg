@@ -8,4 +8,3 @@ coqui-tts
 soundfile
 numpy
 torchcodec
-auto-gptq
