@@ -9,6 +9,9 @@ ENV COQUI_TOS_AGREED=1
 RUN python -m pip install --upgrade pip
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
+# auto-gptq without build isolation to avoid requiring torch installation again
+RUN python -m pip install --no-cache-dir --no-build-isolation auto-gptq
+
 RUN python -c "import runpod; print('runpod import OK')"
 RUN python -c "from TTS.api import TTS; TTS(model_name='tts_models/multilingual/multi-dataset/xtts_v2', gpu=False)"
 

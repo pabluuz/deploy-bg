@@ -1,4 +1,3 @@
-torch
 runpod
 diffusers
 transformers
