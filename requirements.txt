@@ -2,6 +2,7 @@ runpod
 diffusers
 transformers
 accelerate
+optimum
 safetensors
 Pillow
 coqui-tts
