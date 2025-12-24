@@ -9,7 +9,7 @@ _SERVICE = None
 def _get_service() -> LLMService:
     global _SERVICE
     if _SERVICE is None:
-        model_id = os.getenv("LLM_MODEL_ID", "TheBloke/OpenHermes-2.5-Mistral-7B-GPTQ")
+        model_id = os.getenv("LLM_MODEL_ID", "teknium/OpenHermes-2.5-Mistral-7B")
         _SERVICE = LLMService(model_id=model_id)
     return _SERVICE
 
